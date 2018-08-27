@@ -2,6 +2,7 @@
 import requests
 import pymongo
 
+
 # 利用cookie模拟登录知乎，请求topic页面
 def login_zhihu_ajax():
     headers = {
@@ -11,9 +12,9 @@ def login_zhihu_ajax():
     # 传入cookie
     cookies = {
         # 我的账号的cookie
-        'z_c0': '"2|1:0|10:1535337357|4:z_c0|92'
-                ':Mi4xbnRXSEFnQUFBQUFBVUtjcUNEcnFEU1lBQUFCZ0FsVk5qYkZ3WEFDaDZiNVpJTDFUQlNheXctbGFJSzg4SzVMVDlR'
-                '|96d0fa766d6dbbeb13451200f3d2033dc45b472449285d6a4afaa45130617766" '
+        'z_c0': '"2|1:0|10:1535377292|4:z_c0|92'
+                ':Mi4xbnRXSEFnQUFBQUFBVUtjcUNEcnFEU1lBQUFCZ0FsVk5qRTF4WEFBRjZReDBqM1VXOFdRZGxSTVlDMkVYNWNJUjZB'
+                '|aee4668c213220b1dce5a3225aa9c3759a0f43d61389c449faa57e3886f752fb" '
     }
     # 显示80个关注的topic（参数limit改变数量）
     url = "https://www.zhihu.com/followed_topics?offset=0&limit=80"
@@ -40,8 +41,11 @@ def parse_page_json(html_json):
         print(introduction)
         print('=' * 80)
         # 存入数据库中
-        save_to_mongo(topic_info)
+        # save_to_mongo(topic_info)
+        return url_token
 
+
+"""
 # 连接到MongoDB
 MONGO_URL = 'localhost'
 MONGO_DB = 'zhihu_topic'
@@ -58,13 +62,19 @@ def save_to_mongo(data):
             print('存储到 MongoDB 成功')
     except Exception:
         print('存储到 MongoDB 失败')
+"""
 
 
-
-if __name__ == '__main__':
-    # topic的url基地址
-    base_url = "https://www.zhihu.com/topic"
+#######################################################
+# 获取topic
+def get_topic():
     # 爬取ajax异步传输的内容
     html_json = login_zhihu_ajax()
     # 解析json
-    parse_page_json(html_json)
+    url_answers = parse_page_json(html_json)
+    return url_answers
+#######################################################
+
+
+if __name__ == '__main__':
+    get_topic()
