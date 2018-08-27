@@ -1,7 +1,7 @@
 import requests
 import time
 
-
+'https://www.zhihu.com/topic/19577498/top-answers'
 def get_answer(page):
     header = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
