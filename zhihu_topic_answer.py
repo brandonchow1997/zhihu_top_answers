@@ -1,5 +1,6 @@
 import requests
 import time
+# 引入topic.py
 import topics
 
 
@@ -9,6 +10,7 @@ def get_answer(page, keyword):
                       'Chrome/69.0.3497.12 Safari/537.36'
     }
     topic_id = '{topic}'.format(topic=keyword)
+    # base_url
     base_url = 'https://www.zhihu.com/api/v4/topics/{topic}/feeds/essence?'.format(topic=topic_id) \
                + 'include=data%5B%3F(target.type%3Dtopic_sticky_module)%5D.target.data%5B%3F(' \
                  'target.type%3Danswer)%5D.target.content%2Crelationship.is_authorized%2Cis_author%2Cvoting' \
@@ -25,7 +27,7 @@ def get_answer(page, keyword):
                  '%2Cis_thanked%2Cis_nothelp%3Bdata%5B%3F(target.type%3Danswer)%5D.target.author.badge%5B%3F(' \
                  'type%3Dbest_answerer)%5D.topics%3Bdata%5B%3F(' \
                  'target.type%3Darticle)%5D.target.content%2Cauthor.badge%5B%3F(' \
-                 'type%3Dbest_answerer)%5D.topics%3Bdata%5B%3F(target.type%3Dquestion)%5D.target.comment_count'\
+                 'type%3Dbest_answerer)%5D.topics%3Bdata%5B%3F(target.type%3Dquestion)%5D.target.comment_count' \
                + '&offset='
     url = base_url + str(page * 5) + '&limit=5'
     # 设置每页显示5个回答
@@ -42,7 +44,7 @@ def parse_answer_page(html):
     try:
         for item in items:
             type = item['target']['type']
-            id = item['target']['id']
+            # id = item['target']['id']
             author_name = item['target']['author']['name']
             author_gender = item['target']['author']['gender']
             author_headline = item['target']['author']['headline']
@@ -55,22 +57,22 @@ def parse_answer_page(html):
                 print('回答者:', author_name, end='||')
                 print('性别:', author_gender)
                 print('回答者简介:', author_headline)
-                print('回答id:', id)
+                # print('回答id:', id)
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
 
             else:
                 article_title = item['target']['title']
-                # content = item['target']['content']
+                content = item['target']['content']
                 print('专栏文章:', article_title)
                 print('作者:', author_name, end='||')
                 print('性别:', author_gender)
                 print('作者简介:', author_headline)
-                print('文章id:', id)
+                # print('文章id:', id)
                 print('评论数:', comment_count)
+                print(content)
                 print('-' * 50)
-                # print(content)
 
             print('=' * 60)
             time.sleep(2)
@@ -90,15 +92,21 @@ def answer(keyword):
         time.sleep(2)
         if end == True:
             break
+
+
 #######################################################
 
 
 if __name__ == '__main__':
-    # 从topics模块，获取topics
+    # ####从topics模块，获取topics##### #
     keyword = topics.get_topic()
-    print(keyword)
+    # ####从topics模块，获取topics##### #
+    # keyword[1]为话题的name属性
     print('正在爬取')
-    print('精选回答...')
+    print('--', keyword[1], '--')
+    print('的精选回答...')
+    time.sleep(2)
     print('=' * 100)
     print('=' * 100)
-    answer(keyword)
+    # keyword[0]为话题的url_token属性
+    answer(keyword[0])
