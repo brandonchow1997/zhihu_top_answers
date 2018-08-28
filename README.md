@@ -10,4 +10,5 @@
 -------------------
 2018.8.28
 爬取话题增加了进度条，并显示当前爬取的话题名称
+根据不同话题，创建不同的txt文件，将内容分类存入
 ![result](https://github.com/brandonchow1997/zhihu_top_answers/blob/master/result.png)
