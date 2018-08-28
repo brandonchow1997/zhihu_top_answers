@@ -37,7 +37,7 @@ def get_answer(page, keyword):
 
 
 # 解析ajax回答
-def parse_answer_page(html):
+def parse_answer_page(html, topic_name):
     paging = html['paging']
     is_end = paging['is_end']
     items = html['data']
@@ -61,7 +61,8 @@ def parse_answer_page(html):
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
-
+                info = '\n'.join([question_title,author_name,str(author_gender),author_headline,str(comment_count),content])
+                save_to_txt(info, topic_name)
             else:
                 article_title = item['target']['title']
                 content = item['target']['content']
@@ -73,6 +74,8 @@ def parse_answer_page(html):
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
+                info = '\n'.join([article_title, author_name, author_gender, author_headline, comment_count, content])
+                save_to_txt(info, topic_name)
 
             print('=' * 60)
             time.sleep(2)
@@ -81,17 +84,24 @@ def parse_answer_page(html):
         # comments(id)
     return is_end
 
-
 ##########################################################
-def answer(keyword):
+def answer(keyword, topic_name):
     i = 0
     while (1):
         i = i + 1
         data = get_answer(i - 1, keyword)
-        end = parse_answer_page(data)
+        end = parse_answer_page(data, topic_name)
         time.sleep(2)
         if end == True:
             break
+
+
+# topic_name参数为输出txt的名称传递参数
+def save_to_txt(info, topic_name):
+    file = open('{topic_name}.txt'.format(topic_name=topic_name), 'a', encoding='utf-8')
+    file.write(info)
+    file.write('\n' + '='*50 + '\n')
+    file.close()
 
 
 #######################################################
@@ -108,5 +118,5 @@ if __name__ == '__main__':
     time.sleep(2)
     print('=' * 100)
     print('=' * 100)
-    # keyword[0]为话题的url_token属性
-    answer(keyword[0])
+    # keyword[0]为话题的url_token属性,keyword[1]为话题name属性，为输出txt传递参数
+    answer(keyword[0], keyword[1])
