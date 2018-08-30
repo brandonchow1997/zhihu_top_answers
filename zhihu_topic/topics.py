@@ -1,6 +1,6 @@
 # https://www.zhihu.com/followed_topics?offset=20&limit=80
 import requests
-# import pymongo
+import pymongo
 from tqdm import tqdm
 
 
@@ -25,6 +25,8 @@ def login_zhihu_ajax():
 
 # 解析topic页面返回的json数据
 def parse_page_json(html_json):
+    url_token_list = []
+    name_list = []
     data = html_json['payload']
     print('--- 已获取关注的话题%s个 ---' % len(data))
     pbar = tqdm(data)
@@ -38,17 +40,20 @@ def parse_page_json(html_json):
         print('topic:', name)
         print(introduction)
         print('=' * 80)
-        """存入数据库的代码
+        url_token_list.append(url_token)
+        name_list.append(name)
+        # 存入数据库的代码
         topic_info = {
             'name': name,
+            'url_token': url_token,
             'url': url_top_answers,
             'introduction': introduction
         }
         # 存入数据库中
-        save_to_mongo(topic_info)
-        """
+        # save_to_mongo(topic_info)
         # 返回话题的url_token属性和name属性
-        return url_token, name
+    # print(url_token_list)
+    return len(data), url_token_list, name_list
 
 
 """
@@ -70,7 +75,6 @@ def save_to_mongo(data):
         print('存储到 MongoDB 失败')
 """
 
-
 #######################################################
 # 获取topic函数，被"zhihu_topic_answer"调用
 def get_topic():
@@ -81,3 +85,6 @@ def get_topic():
     return url_answers
 #######################################################
 
+
+if __name__ == '__main__':
+    get_topic()
