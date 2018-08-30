@@ -2,6 +2,8 @@ import requests
 import time
 # 引入topic.py
 import topics
+# 引入zhihu_comments.py
+import zhihu_comments
 
 
 def get_answer(page, keyword):
@@ -37,6 +39,7 @@ def get_answer(page, keyword):
 
 
 # 解析ajax回答
+# with_comments
 def parse_answer_page(html, topic_name):
     paging = html['paging']
     is_end = paging['is_end']
@@ -44,7 +47,7 @@ def parse_answer_page(html, topic_name):
     try:
         for item in items:
             type = item['target']['type']
-            # id = item['target']['id']
+            id = item['target']['id']
             author_name = item['target']['author']['name']
             author_gender = item['target']['author']['gender']
             author_headline = item['target']['author']['headline']
@@ -61,7 +64,63 @@ def parse_answer_page(html, topic_name):
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
-                info = '\n'.join([question_title,author_name,str(author_gender),author_headline,str(comment_count),content])
+                print('-' * 50)
+                print('-- 以下为回答的评论 --')
+                # 通过返回的回答的id属性，传递到zhihu_comments.answer_comments()函数中，爬取所有回答
+                zhihu_comments.comments(id, topic_name)
+                info = '\n'.join([question_title, author_name, str(author_gender), author_headline, str(comment_count), content])
+                save_to_txt(info, topic_name)
+            else:
+                article_title = item['target']['title']
+                content = item['target']['content']
+                print('专栏文章:', article_title)
+                print('作者:', author_name, end='||')
+                print('性别:', author_gender)
+                print('作者简介:', author_headline)
+                # print('文章id:', id)
+                print('评论数:', comment_count)
+                print(content)
+                print('-' * 50)
+                print('-' * 50)
+                print('-- 以下为回答的评论 --')
+                zhihu_comments.comments(id, topic_name)
+                # 通过返回的回答的id属性，传递到zhihu_comments.answer_comments()函数中，爬取所有回答
+                info = '\n'.join([article_title, author_name, str(author_gender), author_headline, str(comment_count), content])
+                save_to_txt(info, topic_name)
+
+            print('=' * 60)
+            time.sleep(2)
+    except Exception:
+        print('crawel failed')
+    return is_end
+
+
+# without_comments
+def parse_answer_page_without(html, topic_name):
+    paging = html['paging']
+    is_end = paging['is_end']
+    items = html['data']
+    try:
+        for item in items:
+            type = item['target']['type']
+            author_name = item['target']['author']['name']
+            author_gender = item['target']['author']['gender']
+            author_headline = item['target']['author']['headline']
+            comment_count = item['target']['comment_count']
+            content = item['target']['content']
+            if type == 'answer':
+                question_title = item['target']['question']['title']
+                # content = item['target']['content']
+                print('问题:', question_title)
+                print('回答者:', author_name, end='||')
+                print('性别:', author_gender)
+                print('回答者简介:', author_headline)
+                # print('回答id:', id)
+                print('评论数:', comment_count)
+                print(content)
+                print('-' * 50)
+                info = '\n'.join(
+                    [question_title, author_name, str(author_gender), author_headline, str(comment_count), content])
                 save_to_txt(info, topic_name)
             else:
                 article_title = item['target']['title']
@@ -81,18 +140,33 @@ def parse_answer_page(html, topic_name):
             time.sleep(2)
     except Exception:
         print('crawel failed')
-        # comments(id)
     return is_end
 
+
 ##########################################################
-def answer(keyword, topic_name):
+def answer_with_comments(keyword, topic_name):
     i = 0
-    while (1):
+    while True:
         i = i + 1
         data = get_answer(i - 1, keyword)
         end = parse_answer_page(data, topic_name)
+        # 每爬取一次休眠2秒
         time.sleep(2)
-        if end == True:
+
+        if end is True:
+            break
+
+
+def answer_without_comments(keyword, topic_name):
+    i = 0
+    while True:
+        i = i + 1
+        data = get_answer(i - 1, keyword)
+        end = parse_answer_page_without(data, topic_name)
+        # 每爬取一次休眠2秒
+        time.sleep(2)
+
+        if end is True:
             break
 
 
@@ -100,23 +174,45 @@ def answer(keyword, topic_name):
 def save_to_txt(info, topic_name):
     file = open('{topic_name}.txt'.format(topic_name=topic_name), 'a', encoding='utf-8')
     file.write(info)
-    file.write('\n' + '='*50 + '\n')
+    file.write('\n' + '=' * 50 + '\n')
     file.close()
 
 
 #######################################################
 
 
-if __name__ == '__main__':
+def main():
     # ####从topics模块，获取topics##### #
     keyword = topics.get_topic()
     # ####从topics模块，获取topics##### #
     # keyword[1]为话题的name属性
-    print('正在爬取')
-    print('--', keyword[1], '--')
-    print('的精选回答...')
-    time.sleep(2)
-    print('=' * 100)
-    print('=' * 100)
-    # keyword[0]为话题的url_token属性,keyword[1]为话题name属性，为输出txt传递参数
-    answer(keyword[0], keyword[1])
+    print('是否爬取所有评论?(y/n)')
+    # 判断是否爬取评论
+    #############################
+    while True:
+        judge = input()
+        if judge == 'y':
+            print('- 正在爬取 -')
+            print('--', keyword[1], '--')
+            print('- 的精选回答和评论... -')
+            time.sleep(1)
+            print('=' * 100)
+            print('=' * 100)
+            # keyword[0]为话题的url_token属性,keyword[1]为话题name属性，为输出txt传递参数
+            answer_with_comments(keyword[0], keyword[1])
+            # 通过返回的回答的id属性，传递到zhihu_comments.answer_comments()函数中，爬取所有回答
+            # zhihu_comments.answer_comments(id)
+            break
+        elif judge == 'n':
+            print('- 正在爬取 -')
+            print('--', keyword[1], '--')
+            print('- 的精选回答... -')
+            time.sleep(1)
+            print('=' * 100)
+            print('=' * 100)
+            answer_without_comments(keyword[0], keyword[1])
+            break
+        else:
+            print('- 输入错误，请重新输入 -')
+            continue
+    #############################

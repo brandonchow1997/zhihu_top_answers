@@ -1,6 +1,7 @@
 # https://www.zhihu.com/followed_topics?offset=20&limit=80
 import requests
-import pymongo
+# import pymongo
+from tqdm import tqdm
 
 
 # 利用cookie模拟登录知乎，请求topic页面
@@ -9,7 +10,7 @@ def login_zhihu_ajax():
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/69.0.3497.12 Safari/537.36 '
     }
-    # 传入cookie
+    # 传入cookie:'z_c0'
     cookies = {
         # 我的账号的cookie
         'z_c0': '"2|1:0|10:1535377292|4:z_c0|92'
@@ -25,24 +26,29 @@ def login_zhihu_ajax():
 # 解析topic页面返回的json数据
 def parse_page_json(html_json):
     data = html_json['payload']
-    for item in data:
+    print('--- 已获取关注的话题%s个 ---' % len(data))
+    pbar = tqdm(data)
+    for item in pbar:
+        name = item['name']
+        pbar.set_description("Processing Topic:%s..." % name)
         url_token = item['url_token']
         url_top_answers = 'https://www.zhihu.com/topic/{url_token}/top-answers'.format(url_token=url_token)
-        name = item['name']
         introduction = item['introduction']
+        # 生成topic字典
+        print('topic:', name)
+        print(introduction)
+        print('=' * 80)
+        """存入数据库的代码
         topic_info = {
             'name': name,
             'url': url_top_answers,
             'introduction': introduction
         }
-        # 生成topic字典
-        print('页面链接id:', url_top_answers)
-        print('topic:', name)
-        print(introduction)
-        print('=' * 80)
         # 存入数据库中
-        # save_to_mongo(topic_info)
-        return url_token
+        save_to_mongo(topic_info)
+        """
+        # 返回话题的url_token属性和name属性
+        return url_token, name
 
 
 """
@@ -66,7 +72,7 @@ def save_to_mongo(data):
 
 
 #######################################################
-# 获取topic
+# 获取topic函数，被"zhihu_topic_answer"调用
 def get_topic():
     # 爬取ajax异步传输的内容
     html_json = login_zhihu_ajax()
@@ -75,6 +81,3 @@ def get_topic():
     return url_answers
 #######################################################
 
-
-if __name__ == '__main__':
-    get_topic()
