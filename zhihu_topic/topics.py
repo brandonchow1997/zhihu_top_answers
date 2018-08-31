@@ -1,7 +1,7 @@
-# https://www.zhihu.com/followed_topics?offset=20&limit=80
 import requests
-import pymongo
+# import pymongo
 from tqdm import tqdm
+import time
 
 
 # 利用cookie模拟登录知乎，请求topic页面
@@ -31,6 +31,7 @@ def parse_page_json(html_json):
     print('--- 已获取关注的话题%s个 ---' % len(data))
     pbar = tqdm(data)
     for item in pbar:
+        time.sleep(0.2)
         name = item['name']
         pbar.set_description("Processing Topic:%s..." % name)
         url_token = item['url_token']
@@ -74,6 +75,7 @@ def save_to_mongo(data):
     except Exception:
         print('存储到 MongoDB 失败')
 """
+
 
 #######################################################
 # 获取topic函数，被"zhihu_topic_answer"调用

@@ -69,9 +69,11 @@ def parse_answer_page(html, topic_name):
                 print('-- 以下为回答的评论 --')
                 # 通过返回的回答的id属性，传递到zhihu_comments.answer_comments()函数中，爬取所有回答
                 zhihu_comments.comments(id, topic_name)
+                """
                 info = '\n'.join(
                     [question_title, author_name, str(author_gender), author_headline, str(comment_count), content])
                 save_to_txt(info, topic_name)
+                """
             else:
                 article_title = item['target']['title']
                 content = item['target']['content']
@@ -87,14 +89,15 @@ def parse_answer_page(html, topic_name):
                 print('-- 以下为回答的评论 --')
                 zhihu_comments.comments(id, topic_name)
                 # 通过返回的回答的id属性，传递到zhihu_comments.answer_comments()函数中，爬取所有回答
+                """
                 info = '\n'.join(
                     [article_title, author_name, str(author_gender), author_headline, str(comment_count), content])
                 save_to_txt(info, topic_name)
-
+                """
             print('=' * 60)
-            time.sleep(2)
+            time.sleep(0.5)
     except Exception:
-        print('crawel failed')
+        print('parse_answer_page() failed...')
     return is_end
 
 
@@ -122,9 +125,11 @@ def parse_answer_page_without(html, topic_name):
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
+                """
                 info = '\n'.join(
                     [question_title, author_name, str(author_gender), author_headline, str(comment_count), content])
                 save_to_txt(info, topic_name)
+                """
             else:
                 article_title = item['target']['title']
                 content = item['target']['content']
@@ -136,18 +141,19 @@ def parse_answer_page_without(html, topic_name):
                 print('评论数:', comment_count)
                 print(content)
                 print('-' * 50)
+                """
                 info = '\n'.join(
                     [article_title, author_name, str(author_gender), author_headline, str(comment_count), content])
                 save_to_txt(info, topic_name)
-
+                """
             print('=' * 60)
-            time.sleep(2)
+            time.sleep(1)
     except Exception:
-        print('-- crawel failed --')
+        print('parse_answer_page_without() failed...')
     return is_end
 
 
-# without_comments
+#  without_comments
 def parse_answer_page_without_test(html, topic_name):
     items = html['data']
     try:
@@ -190,7 +196,7 @@ def parse_answer_page_without_test(html, topic_name):
             print('=' * 60)
             time.sleep(2)
     except Exception:
-        print('-- crawel failed --')
+        print('parse_answer_page_without_test() failed...')
 
 
 ##########################################################
@@ -255,7 +261,7 @@ def main():
     url_token = keyword[1]
     # keyword[2]为话题的name
     name = keyword[2]
-    print('是否爬取所有评论?(y/n)')
+    print('############# 是否爬取所有评论?(y/n) #############')
     # 判断是否爬取评论
     #############################
     while True:
@@ -277,13 +283,13 @@ def main():
                 print('- 正在爬取 -')
                 print('--', name[i], '--')
                 print('- 的精选回答... -')
-                time.sleep(1)
+                time.sleep(2)
                 print('=' * 100)
                 print('=' * 100)
                 answer_without_comments(url_token[i], name[i])
-            else:
-                print('- 输入错误，请重新输入 -')
-                continue
+        else:
+            print('- 输入错误，请重新输入 -')
+            continue
     #############################
 
 
@@ -297,7 +303,8 @@ def test():
     url_token = keyword[1]
     # keyword[2]为话题的name
     name = keyword[2]
-    print('是否爬取所有评论?(y/n)')
+    print('############# 是否爬取所有评论?(y/n) #############')
+
     # 判断是否爬取评论
     #############################
     while True:
@@ -323,8 +330,8 @@ def test():
                 print('=' * 100)
                 print('=' * 100)
                 answer_without_comments_test(url_token[i], name[i])
-            else:
-                print('- 输入错误，请重新输入 -')
-                continue
+        else:
+            print('- 输入错误，请重新输入 -')
+            continue
     #############################
 #######################################################
