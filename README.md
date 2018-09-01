@@ -1,4 +1,4 @@
-# zhihu_top_answers
+﻿# zhihu_top_answers
 爬取用户##使用的是我的cookie，可自行修改cookie值:z_c0##所关注的所有话题下的全部精选回答，包括回答者/作者，简介，性别，具体内容。
 库依赖：requests,pymongo
 -- 运行main.py即可 --
@@ -18,4 +18,11 @@
 评论增加所属话题属性，在zhihu_topic_answer.py中引入zhihu_comments模块（增加了评论获取模块）。
 在爬取所有话题后，增加（y/s）输入选项，选择是否附加爬取精华回答下的所有评论（并存入MongoDB中，可自行修改）。
 ##暂时未添加代理池，请注意爬取的速率和时间间隔，防止弹出验证码或者是被封ip##
+---------------------
+2018.9.1更新
+增加了selenium版本
+---------------------
 ![result](https://github.com/brandonchow1997/zhihu_top_answers/blob/master/result.png)
+![result2](https://github.com/brandonchow1997/zhihu_top_answers/blob/master/result2.png)
+![selenium_result](https://github.com/brandonchow1997/zhihu_top_answers/blob/master/selenium_result.png)
+
