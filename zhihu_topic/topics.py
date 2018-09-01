@@ -5,7 +5,7 @@ import time
 
 
 # 利用cookie模拟登录知乎，请求topic页面
-def login_zhihu_ajax():
+def login_zhihu_ajax(cookie):
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/69.0.3497.12 Safari/537.36 '
@@ -13,9 +13,7 @@ def login_zhihu_ajax():
     # 传入cookie:'z_c0'
     cookies = {
         # 我的账号的cookie
-        'z_c0': '"2|1:0|10:1535377292|4:z_c0|92'
-                ':Mi4xbnRXSEFnQUFBQUFBVUtjcUNEcnFEU1lBQUFCZ0FsVk5qRTF4WEFBRjZReDBqM1VXOFdRZGxSTVlDMkVYNWNJUjZB'
-                '|aee4668c213220b1dce5a3225aa9c3759a0f43d61389c449faa57e3886f752fb" '
+        'z_c0': '{cookie}'.format(cookie=cookie)
     }
     # 显示80个关注的topic（参数limit改变数量）
     url = "https://www.zhihu.com/followed_topics?offset=0&limit=80"
@@ -24,7 +22,7 @@ def login_zhihu_ajax():
 
 
 # 解析topic页面返回的json数据
-def parse_page_json(html_json):
+def parse_page_json_test(html_json):
     url_token_list = []
     name_list = []
     data = html_json['payload']
@@ -57,6 +55,27 @@ def parse_page_json(html_json):
     return len(data), url_token_list, name_list
 
 
+# 解析topic页面返回的json数据
+def parse_page_json(html_json):
+    url_token_list = []
+    name_list = []
+    data = html_json['payload']
+    print('--- 已获取关注的话题%s个 ---' % len(data))
+    for item in data:
+        name = item['name']
+        url_token = item['url_token']
+        introduction = item['introduction']
+        # 生成topic字典
+        print('topic:', name)
+        print(introduction)
+        print('=' * 80)
+        url_token_list.append(url_token)
+        name_list.append(name)
+        # 返回话题的url_token属性和name属性
+    # print(url_token_list)
+    return len(data), url_token_list, name_list
+
+
 """
 # 连接到MongoDB
 MONGO_URL = 'localhost'
@@ -79,11 +98,20 @@ def save_to_mongo(data):
 
 #######################################################
 # 获取topic函数，被"zhihu_topic_answer"调用
-def get_topic():
+def get_topic(cookie):
     # 爬取ajax异步传输的内容
-    html_json = login_zhihu_ajax()
+    html_json = login_zhihu_ajax(cookie)
     # 解析json
     url_answers = parse_page_json(html_json)
+    return url_answers
+
+
+############ TEST
+def get_topic_test(cookie):
+    # 爬取ajax异步传输的内容
+    html_json = login_zhihu_ajax(cookie)
+    # 解析json
+    url_answers = parse_page_json_test(html_json)
     return url_answers
 #######################################################
 

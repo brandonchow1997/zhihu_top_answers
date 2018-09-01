@@ -49,6 +49,7 @@ def parse_answer_page(html, topic_name):
         for item in items:
             type = item['target']['type']
             id = item['target']['id']
+            voteup_count = item['target']['voteup_count']
             author_name = item['target']['author']['name']
             author_gender = item['target']['author']['gender']
             author_headline = item['target']['author']['headline']
@@ -63,6 +64,7 @@ def parse_answer_page(html, topic_name):
                 print('回答者简介:', author_headline)
                 # print('回答id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 print('-' * 50)
@@ -83,6 +85,7 @@ def parse_answer_page(html, topic_name):
                 print('作者简介:', author_headline)
                 # print('文章id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 print('-' * 50)
@@ -98,6 +101,7 @@ def parse_answer_page(html, topic_name):
             time.sleep(0.5)
     except Exception:
         print('parse_answer_page() failed...')
+        pass
     return is_end
 
 
@@ -109,6 +113,7 @@ def parse_answer_page_without(html, topic_name):
     try:
         for item in items:
             type = item['target']['type']
+            voteup_count = item['target']['voteup_count']
             author_name = item['target']['author']['name']
             author_gender = item['target']['author']['gender']
             author_headline = item['target']['author']['headline']
@@ -123,6 +128,7 @@ def parse_answer_page_without(html, topic_name):
                 print('回答者简介:', author_headline)
                 # print('回答id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 """
@@ -139,6 +145,7 @@ def parse_answer_page_without(html, topic_name):
                 print('作者简介:', author_headline)
                 # print('文章id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 """
@@ -150,6 +157,7 @@ def parse_answer_page_without(html, topic_name):
             time.sleep(1)
     except Exception:
         print('parse_answer_page_without() failed...')
+        pass
     return is_end
 
 
@@ -159,6 +167,7 @@ def parse_answer_page_without_test(html, topic_name):
     try:
         for item in items:
             type = item['target']['type']
+            voteup_count = item['target']['voteup_count']
             author_name = item['target']['author']['name']
             author_gender = item['target']['author']['gender']
             author_headline = item['target']['author']['headline']
@@ -173,6 +182,7 @@ def parse_answer_page_without_test(html, topic_name):
                 print('回答者简介:', author_headline)
                 # print('回答id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 info = '\n'.join(
@@ -180,6 +190,7 @@ def parse_answer_page_without_test(html, topic_name):
                 save_to_txt(info, topic_name)
             else:
                 article_title = item['target']['title']
+                voteup_count = item['target']['voteup_count']
                 content = item['target']['content']
                 print('专栏文章:', article_title)
                 print('作者:', author_name, end='||')
@@ -187,6 +198,7 @@ def parse_answer_page_without_test(html, topic_name):
                 print('作者简介:', author_headline)
                 # print('文章id:', id)
                 print('评论数:', comment_count)
+                print('赞同数:', voteup_count)
                 print(content)
                 print('-' * 50)
                 info = '\n'.join(
@@ -197,6 +209,7 @@ def parse_answer_page_without_test(html, topic_name):
             time.sleep(2)
     except Exception:
         print('parse_answer_page_without_test() failed...')
+        pass
 
 
 ##########################################################
@@ -251,9 +264,9 @@ def save_to_txt(info, topic_name):
 
 
 #######################################################
-def main():
+def main(cookie):
     # ####从topics模块，获取topics##### #
-    keyword = topics.get_topic()
+    keyword = topics.get_topic(cookie)
     # ####从topics模块，获取topics##### #
     # keyword[0]为话题的总数量
     total = keyword[0]
@@ -293,9 +306,9 @@ def main():
     #############################
 
 
-def test():
+def test(cookie):
     # ####从topics模块，获取topics##### #
-    keyword = topics.get_topic()
+    keyword = topics.get_topic_test(cookie)
     # ####从topics模块，获取topics##### #
     # keyword[0]为话题的总数量
     total = keyword[0]
@@ -303,7 +316,7 @@ def test():
     url_token = keyword[1]
     # keyword[2]为话题的name
     name = keyword[2]
-    print('############# 是否爬取所有评论?(y/n) #############')
+    print('############# 是否爬取评论?(y/n) #############')
 
     # 判断是否爬取评论
     #############################

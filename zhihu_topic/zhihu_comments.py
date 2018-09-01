@@ -8,16 +8,17 @@ def get_comments(id, page):
     try:
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                        'Chrome/69.0.3497.12 Safari/537.36'
+                          'Chrome/69.0.3497.12 Safari/537.36'
         }
 
         url = 'https://www.zhihu.com/api/v4/answers/{id}/comments?include=data%5B*%5D.author%2Ccollapsed' \
-            '%2Creply_to_author%2Cdisliked%2Ccontent%2Cvoting%2Cvote_count%2Cis_parent_author%2Cis_author' \
-            '%2Calgorithm_right&order=normal&limit=20&offset='.format(id=id) + str(page * 20) + '&status=open'
+              '%2Creply_to_author%2Cdisliked%2Ccontent%2Cvoting%2Cvote_count%2Cis_parent_author%2Cis_author' \
+              '%2Calgorithm_right&order=normal&limit=20&offset='.format(id=id) + str(page * 20) + '&status=open'
         response = requests.get(url, headers=header)
         return response.json()
     except Exception:
         print('get_comments() failed...')
+        pass
 
 
 # 解析函数
@@ -43,9 +44,10 @@ def parse_comments(html, topic_name):
                 'vote_count': vote_count
             }
             save_to_mongo(info)
-            return is_end
+        return is_end
     except Exception:
         print('parse_comments() failed...')
+        pass
 
 
 # 存储到数据库
@@ -72,10 +74,9 @@ def comments(id, topic_name):
     page = 0
     print('-- 正在爬取评论 --')
     print('...')
-    while True:
-        page = page + 1
-        # 每页爬取20条评论
-        html = get_comments(id, page - 1)
+    for page in range(0, 5):
+        # 每页爬取20条评论 最多爬五页
+        html = get_comments(id, page)
         is_end = parse_comments(html, topic_name)
         if is_end is True:
             break
